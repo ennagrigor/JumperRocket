@@ -36,29 +36,29 @@ The movement then is implemented in this code:
 ```C#
     void Update()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");              // Moving The player on horizontal axis
-        Vector3 direction = new Vector3(horizontalInput, 0, 0);           // getting direction
-        Vector3 velocity = direction * _speed;                            // calculating velocity
+        float horizontalInput = Input.GetAxis("Horizontal");      // Moving The player on horizontal axis
+        Vector3 direction = new Vector3(horizontalInput, 0, 0);   // getting direction
+        Vector3 velocity = direction * _speed;                    // calculating velocity
 
-        if (_controller.isGrounded == true)                               // if the player is on the ground than he can jump
+        if (_controller.isGrounded == true)                       // if the player is on the ground than he can jump
         {
-            if (Input.GetKeyDown(KeyCode.Space))                          // jumps when the space key is pressed
+            if (Input.GetKeyDown(KeyCode.Space))                  // jumps when the space key is pressed
             {
                 _yVelocity = _jumpHeight;
-                _canDoubleJump = true;                                    // sets double jump to true so he can jump again
+                _canDoubleJump = true;                            // sets double jump to true so he can jump again
             }
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Space))                          // double jump
+            if (Input.GetKeyDown(KeyCode.Space))       // double jump
             {
                 if (_canDoubleJump == true)
                 {
-                    _yVelocity = _jumpHeight;                             // jumps again and sets to false so it is onl double
+                    _yVelocity = _jumpHeight;          // jumps again and sets to false so it is onl double
                     _canDoubleJump = false;
                 }
             }
-            _yVelocity -= _gravity;                                       // takes gravity in account
+            _yVelocity -= _gravity;                    // takes gravity in account
         }
 
         velocity.y = _yVelocity;
@@ -72,9 +72,9 @@ The fist one is to add coins and display them on the canvas using UI manager and
 ```C#
 public void AddCoins()
     {
-        _coins++;                                                         // add coins
-        _uiManager.UpdateCoinDisplay(_coins);                             // display on canvas
-        _audioSource.clip = _coinSound;                                   // play audio for coins
+        _coins++;                                  // add coins
+        _uiManager.UpdateCoinDisplay(_coins);      // display on canvas
+        _audioSource.clip = _coinSound;            // play audio for coins
         _audioSource.Play();
     }
 ```
@@ -86,17 +86,17 @@ It checks using scene manager which scene to load and than loads it.
 ```C#
     public void Damage()
     {
-        _lives--;                                                         // removes a life when called
-        _uiManager.UpdateLivesDisplay(_lives);                            // updates the UI 
+        _lives--;                                                // removes a life when called
+        _uiManager.UpdateLivesDisplay(_lives);                   // updates the UI 
         _audioSource.clip = _fireWorksSound;
-        _audioSource.Play();                                              // playes damage audio
+        _audioSource.Play();                                     // playes damage audio
 
-        if (_lives < 1)                                                   // checks if we are dead 
+        if (_lives < 1)                                          // checks if we are dead 
         {
-            Scene currentScene = SceneManager.GetActiveScene();           // checks which scene we are at
+            Scene currentScene = SceneManager.GetActiveScene();  // checks which scene we are at
             string sceneName = currentScene.name;
 
-            if (sceneName.Equals("Level 1"))                              // loads scene that was played
+            if (sceneName.Equals("Level 1"))                     // loads scene that was played
             {
                 SceneManager.LoadScene(0);
             }
@@ -117,10 +117,10 @@ The player has a win function - that tells the game which level to go next:
 ```C#
 public void WinLevel()
     {
-        Scene currentScene = SceneManager.GetActiveScene();                 // gets active scene
-        string sceneName = currentScene.name;                               // gets it's name
+        Scene currentScene = SceneManager.GetActiveScene();  // gets active scene
+        string sceneName = currentScene.name;                // gets it's name
 
-        if (sceneName.Equals("Level 1"))                                    // loads the next scene according to current.
+        if (sceneName.Equals("Level 1"))                     // loads the next scene according to current.
         {
             SceneManager.LoadScene(1);
         }
@@ -140,8 +140,8 @@ The last function is the add lives that happens when you collect a heart object:
 ```C#
 public void addLives() //collecting hearts
     {
-        _lives++;                                                             // adds a life
-        _uiManager.UpdateLivesDisplay(_lives);                                // updates the UI
+        _lives++;                                   // adds a life
+        _uiManager.UpdateLivesDisplay(_lives);      // updates the UI
     }
 ```
 
