@@ -1,5 +1,5 @@
-# gamedev-05-q1
-Contains all the first question answers from lesson 5 homework: [gamedev-5780](https://github.com/erelsgl-at-ariel/gamedev-5780)
+# gamedev-08-unity-physics
+Contains the fourth question: [gamedev-5780](https://github.com/erelsgl-at-ariel/gamedev-5780)
 
 **Created by:**
 
@@ -7,46 +7,163 @@ Contains all the first question answers from lesson 5 homework: [gamedev-5780](h
 
 [Enna Grigor](https://github.com/ennagrigor)
 
-<img src="Images/world.png" width=400>
+This is a game that consists a 3D rocket that jumps through different platforms and collects stars/coins and has to avoid obsticles.
+This game has three different levels that get harder as you go along.
 
-## 1 Oscillator
+## The Rocket / Player
 
-Moves the object from one point to another. the user can choose in which
-way the object will move on the x and y axis. The speed will slow down as the object gets closer to the endpoints.
-- `Min Speed` - The minimun speed of the object. 
-- `Max Speed` - The maximun speed of the object.
-- `X Distance` - The distance of the object from its endpoints on the x axis.
-- `Y Distance` - The distance of the object from its endpoints on the y axis.
-- `Slow Down Distance` - The distance from the endpoint where the object starts to slow down.
+The Player is a 3D rocket that has 4 main functions for movement. 
+- `space` - makes the rocket jump.
+- `double space` - makes the rocket double jump.
+- `right key` - moves the rocket right.
+- `left key` - moves the rocket left.
 
-<img src="Images/q1.png" width=400> <img src="Images/1.1.png" width=400>
+The code uses character controller that allows us to control phsical elements and use phisics. 
 
-## 2 Rotator
+We use these parameters to initialize the character controller, speed, gravity, jump hight and velocity:
 
-Rotate an Object. 
-The user can add his own values to:
-- `Position x, y, z` - Determine how the object will rotate on each axis.
-- `Speed` - The speed of the rotation.
+```C#
+    private CharacterController _controller;
+    [SerializeField] private float _speed = 5.0f;
+    [SerializeField] private float _gravity = 1.0f;
+    [SerializeField] private float _jumpHeight = 19.0f;
+    private float _yVelocity;
+    private bool _canDoubleJump = false;
+```
 
-<img src="Images/q2.png" width=400>
+The movement then is implemented in this code:
 
-## 3 Scale Changer
+```C#
+    void Update()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");              // Moving The player on horizontal axis
+        Vector3 direction = new Vector3(horizontalInput, 0, 0);           // getting direction
+        Vector3 velocity = direction * _speed;                            // calculating velocity
 
-Increases and decreases the ball gradually.
-The user can add his own values to:
-- `Max size` - The maximum size the ball can reach.
-- `Min size` - The minimum size the ball can reach.
-- `Speed` - The speed at which the ball is decreasing and increasing.
+        if (_controller.isGrounded == true)                               // if the player is on the ground than he can jump
+        {
+            if (Input.GetKeyDown(KeyCode.Space))                          // jumps when the space key is pressed
+            {
+                _yVelocity = _jumpHeight;
+                _canDoubleJump = true;                                    // sets double jump to true so he can jump again
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Space))                          // double jump
+            {
+                if (_canDoubleJump == true)
+                {
+                    _yVelocity = _jumpHeight;                             // jumps again and sets to false so it is onl double
+                    _canDoubleJump = false;
+                }
+            }
+            _yVelocity -= _gravity;                                       // takes gravity in account
+        }
 
-<img src="Images/q3.1.png" width=400>  <img src="Images/q3.2.png" width=400>
+        velocity.y = _yVelocity;
+        _controller.Move(velocity * Time.deltaTime);
+    }
+```
 
-## 4 Circular Motion
+The player also has multiple functions.
+The fist one is to add coins and display them on the canvas using UI manager and play a coin audio:
 
-Moves the ball in a circular form.
-In order to move the ball around you can use the arrow keys (<- and ->)
-The user can add his own values to:
-- `Speed` - Determine the speed of the movement.
-- `Radius` - The distance between the current x position to the center of the circle.
-(The center of the circle is positionX + radius).
+```C#
+public void AddCoins()
+    {
+        _coins++;                                                         // add coins
+        _uiManager.UpdateCoinDisplay(_coins);                             // display on canvas
+        _audioSource.clip = _coinSound;                                   // play audio for coins
+        _audioSource.Play();
+    }
+```
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Star_Coin.png" width=400>
 
-<img src="Images/q4.1.png" width=400> <img src="Images/q4.2.png" width=400>
+The player also has a damage funstion that removes lives and checks if we are dead - and if we are dead then re-starts the level.
+It checks using scene manager which scene to load and than loads it.
+
+```C#
+    public void Damage()
+    {
+        _lives--;                                                         // removes a life when called
+        _uiManager.UpdateLivesDisplay(_lives);                            // updates the UI 
+        _audioSource.clip = _fireWorksSound;
+        _audioSource.Play();                                              // playes damage audio
+
+        if (_lives < 1)                                                   // checks if we are dead 
+        {
+            Scene currentScene = SceneManager.GetActiveScene();           // checks which scene we are at
+            string sceneName = currentScene.name;
+
+            if (sceneName.Equals("Level 1"))                              // loads scene that was played
+            {
+                SceneManager.LoadScene(0);
+            }
+            if (sceneName.Equals("Level 2"))
+            {
+                SceneManager.LoadScene(1);
+            }
+            if (sceneName.Equals("Level 3"))
+            {
+                SceneManager.LoadScene(2);
+            }
+        }
+    }
+```
+
+The player has a win function - that tells the game which level to go next:
+
+```C#
+public void WinLevel()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();                 // gets active scene
+        string sceneName = currentScene.name;                               // gets it's name
+
+        if (sceneName.Equals("Level 1"))                                    // loads the next scene according to current.
+        {
+            SceneManager.LoadScene(1);
+        }
+        if (sceneName.Equals("Level 2"))
+        {
+            SceneManager.LoadScene(2);
+        }
+        if (sceneName.Equals("Level 3"))
+        {
+            SceneManager.LoadScene(3);
+        }
+    }
+```
+
+The last function is the add lives that happens when you collect a heart object:
+
+```C#
+public void addLives() //collecting hearts
+    {
+        _lives++;                                                             // adds a life
+        _uiManager.UpdateLivesDisplay(_lives);                                // updates the UI
+    }
+```
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Heart.png" width=400>
+
+## The moving platforms
+
+## DeadZone
+
+## Coin/Star
+
+## Obsticales
+
+## Level 1
+
+## Level 2
+
+## Level 3
+
+### ReloadGame:
+
+## Audio
+
+## Link to ITCH.IO
+[Jumper Rocket Game](https://ennagrigor.itch.io/jumperrocket)
