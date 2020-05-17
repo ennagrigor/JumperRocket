@@ -149,21 +149,229 @@ public void addLives() //collecting hearts
 
 ## The moving platforms
 
+The platforms are the objects that the player jumps on.
+They consist two kinds:
+Static platforms that the player jumps on and moving platforms. 
+The moving platforms use two points that are added through the inspector.
+On trigger with the player make the player it's child so it moves with the platform and doesn't fall off.
+Once it jumps off the moving platform - it is no longer a child of the platform.
+
+The code for moving platform:
+
+```C#
+void FixedUpdate()
+    {
+        if (_switching == false)      
+        {
+            // move to taget B
+            transform.position = Vector3.MoveTowards(transform.position, _targetB.position, _speed * Time.deltaTime);
+        }
+        else if (_switching == true)
+        {
+            // move to target A
+            transform.position = Vector3.MoveTowards(transform.position, _targetA.position, _speed * Time.deltaTime);
+        }
+
+        if (transform.position == _targetB.position)         // boolean flags to know which ay to go
+        {
+            _switching = true;
+        }
+        else if(transform.position == _targetA.position)
+        {
+            _switching = false;
+        }
+    }
+```
+The code for making the platform a parent so the player moves with platform:
+
+```C#
+private void OnTriggerEnter(Collider other) //in order to move with the platform become child of platform
+    {
+        if (other.tag == "Player")
+        {
+            other.transform.parent = this.transform;
+        }
+    }
+private void OnTriggerExit(Collider other) //exiting platform -> no longer child of platform
+    {
+        if (other.tag =="Player")
+        {
+            other.transform.parent = null;
+        }
+    }
+```
+## Portal / Win Object
+
+The way to go to next level is to reach the top of current level and trigger the portal.
+
+```C#
+private void OnTriggerEnter(Collider other)                // Portal to next level
+    {
+        if (other.tag == "Player")                         // if other is the player
+        {
+            Player player = other.GetComponent<Player>();  // get player components
+            if (player != null)
+            {
+                player.WinLevel();                        // go to win function that takes the player to next scene
+            }
+        }
+    }
+```
+
 ## DeadZone
+
+The DeadZone is when the player falls and triggers the zone that removes a life and respawns the pler to the begining
+or starts over the game if there is no lives left.
+ 
+ ```C#
+private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Player")                          // if player triggers deadzone
+        {
+            Player player = other.GetComponent<Player>();  // gets player's components
+
+            if (player != null)
+            {
+                player.Damage();                           // calls damage function in player
+            }
+
+            CharacterController cc = other.GetComponent<CharacterController>();
+
+            if (cc != null)
+            {
+                cc.enabled = false;                        // so it falls and respawns
+            }
+
+            other.transform.position = _respawnPoint.transform.position;  // the location of respawn
+
+            StartCoroutine(CCEnableRoutine(cc));                // using the coroutine function
+        }
+    }
+
+    IEnumerator CCEnableRoutine(CharacterController controller) // access to charecter controller to reenable after fall 
+    {
+        yield return new WaitForSeconds(1.0f);
+        controller.enabled = true;
+    }
+```
 
 ## Coin/Star
 
+The coins are objects that look like 3D stars that the player must collect.
+They have a trigger that calls the coins function in player and destroys them once collected. 
+
+```C#
+private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Player") // if the coin collided with player
+        {
+            Player player = other.GetComponent<Player>(); //get player's components
+
+            if(player != null) // if player is not null
+            {
+                player.AddCoins(); 
+            }
+            Destroy(this.gameObject);
+        }
+    }
+```
+
 ## Obsticales
+
+The obsticles are moving balls that move from left to right and if the player triggers them - 
+it loses a life (just like the deadZone) and respawns the player to begininng.
+The balls move just like the moving platforms from point A to point B.
+
+```C#
+private void OnTriggerEnter(Collider other) // Player hits enemy
+    {
+        if (other.tag == "Player")
+        {
+            Player player = other.GetComponent<Player>();
+            if (player != null)
+            {
+                player.Damage();
+            }
+            CharacterController cc = other.GetComponent<CharacterController>();
+
+            if (cc != null)
+            {
+                cc.enabled = false; // so it falls and respawns
+            }
+
+            other.transform.position = _respawnPoint.transform.position;
+
+            StartCoroutine(CCEnableRoutine(cc));
+        }
+    }
+
+    IEnumerator CCEnableRoutine(CharacterController controller) // access to charecter controller to reenable after fall 
+    {
+        yield return new WaitForSeconds(1.0f);
+        controller.enabled = true;
+    }
+
+    void FixedUpdate()
+    {
+        if (_switching == false)
+        {
+            // move to taget B
+            transform.position = Vector3.MoveTowards(transform.position, _targetB.position, _speed * Time.deltaTime);
+        }
+        else if (_switching == true)
+        {
+            // move to target A
+            transform.position = Vector3.MoveTowards(transform.position, _targetA.position, _speed * Time.deltaTime);
+        }
+
+        if (transform.position == _targetB.position)
+        {
+            _switching = true;
+        }
+        else if (transform.position == _targetA.position)
+        {
+            _switching = false;
+        }
+    }
+}
+```
 
 ## Level 1
 
+It is the first level that consists only few platforms and only moving platforms.
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level1.png" width=400>
+
 ## Level 2
+
+The second level adds more platforms, moving balls and is more difficult to pass.
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level2.png" width=400>
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level2_B.png" width=400>
 
 ## Level 3
 
-### ReloadGame:
+Level three has even more platforms and they are in different sizes that makes it more difficult to pass.
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level3.png" width=400>
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level3_B.png" width=400>
+
+## ReloadGame:
+
+Once passed all levels then the player gos to the reload game scene and can restart while cheering audio is played.
+
+<img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Finish_Game.png" width=400>
 
 ## Audio
+
+The game has a number of audio sounds:
+
+- Background
+- Coin sound when collecting stars
+- Rocket sound when hit or fallen
+- Cheering when won
 
 ## Link to ITCH.IO
 [Jumper Rocket Game](https://ennagrigor.itch.io/jumperrocket)
