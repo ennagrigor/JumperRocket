@@ -105,21 +105,8 @@ public class Player : MonoBehaviour
     public void WinLevel()
     {
         Scene currentScene = SceneManager.GetActiveScene();
-        string sceneName = currentScene.name;
-
-        if (sceneName.Equals("Level 1"))
-        {
-            SceneManager.LoadScene(1);
-        }
-        if (sceneName.Equals("Level 2"))
-        {
-            SceneManager.LoadScene(2);
-        }
-        if (sceneName.Equals("Level 3"))
-        {
-            SceneManager.LoadScene(3);
-        }
-        
+        int sceneNum = currentScene.buildIndex;
+        SceneManager.LoadScene(sceneNum + 1);
     }
 
     public void addLives()
