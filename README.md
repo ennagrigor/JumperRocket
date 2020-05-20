@@ -118,20 +118,8 @@ The player has a win function - that tells the game which level to go next:
 public void WinLevel()
     {
         Scene currentScene = SceneManager.GetActiveScene();  // gets active scene
-        string sceneName = currentScene.name;                // gets it's name
-
-        if (sceneName.Equals("Level 1"))                     // loads the next scene according to current.
-        {
-            SceneManager.LoadScene(1);
-        }
-        if (sceneName.Equals("Level 2"))
-        {
-            SceneManager.LoadScene(2);
-        }
-        if (sceneName.Equals("Level 3"))
-        {
-            SceneManager.LoadScene(3);
-        }
+        int sceneNum = currentScene.buildIndex;              // gets index of active scene
+        SceneManager.LoadScene(sceneNum + 1);                // loads next scene
     }
 ```
 
@@ -338,13 +326,17 @@ private void OnTriggerEnter(Collider other) // Player hits enemy
 
 ## Level 1
 
-It is the first level that consists only few platforms and only moving platforms.
+It is the first level that consists only 9 regular platforms and 2 moving platforms, the spacing between the platforms is
+pretty east to pass and they are all the same size.
 
 <img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level1.png" width=400>
 
 ## Level 2
 
-The second level adds more platforms, moving balls and is more difficult to pass.
+The second level adds more platforms, it has 14 regular platforms and 2 moving platforms. 
+The spacing between the platforms is a little bit more distant so it makes the level a bit harder to pass.
+This level also introduces the player to moving balls that act as an enemy that if the player hits the ball they loss a life. 
+The platforms are still all the same size.
 
 <img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level2.png" width=400>
 
@@ -352,7 +344,11 @@ The second level adds more platforms, moving balls and is more difficult to pass
 
 ## Level 3
 
-Level three has even more platforms and they are in different sizes that makes it more difficult to pass.
+The third and final level is the hardest to pass, it consists 20 regular platforms and 3 moving platforms. 
+This level also has moving balls that act as enemies to the player. 
+The spacing between the platforms is more felt and the player must make more precise moves and think before they jump. 
+In this level the platforms are also in different sizes (some platforms are smaller) so it makes it harder to get to the platform. 
+This level also adds one more life towards the end of the platforms to help the player reach the end if they fell. 
 
 <img src="https://github.com/ennagrigor/JumperRocket/blob/master/Photos/Level3.png" width=400>
 
