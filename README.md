@@ -332,7 +332,7 @@ The platforms are still all the same size.
 
 ## Level 3
 
-The third and final level is the hardest to pass, it consists 20 regular platforms and 3 moving platforms. 
+The third and final level is the hardest to pass, it consists 20 regular platforms and 4 moving platforms. 
 This level also has moving balls that act as enemies to the player. 
 The spacing between the platforms is more felt and the player must make more precise moves and think before they jump. 
 In this level the platforms are also in different sizes (some platforms are smaller) so it makes it harder to get to the platform. 
