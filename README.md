@@ -91,23 +91,11 @@ It checks using scene manager which scene to load and than loads it.
         _audioSource.clip = _fireWorksSound;
         _audioSource.Play();                                     // playes damage audio
 
-        if (_lives < 1)                                          // checks if we are dead 
+        if (_lives < 1)                                          // if we are dead
         {
-            Scene currentScene = SceneManager.GetActiveScene();  // checks which scene we are at
-            string sceneName = currentScene.name;
-
-            if (sceneName.Equals("Level 1"))                     // loads scene that was played
-            {
-                SceneManager.LoadScene(0);
-            }
-            if (sceneName.Equals("Level 2"))
-            {
-                SceneManager.LoadScene(1);
-            }
-            if (sceneName.Equals("Level 3"))
-            {
-                SceneManager.LoadScene(2);
-            }
+            Scene currentScene = SceneManager.GetActiveScene();
+            int sceneNum = currentScene.buildIndex;
+            SceneManager.LoadScene(sceneNum);
         }
     }
 ```
